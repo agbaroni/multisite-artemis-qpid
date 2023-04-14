@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns="urn:activemq"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:xi="http://www.w3.org/2001/XInclude"
+               xsi:schemaLocation="urn:activemq /schema/artemis-configuration.xsd">
+
+  <core xmlns="urn:activemq:core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:activemq:core ">
+
+    <name>broker11m</name>
+
+    <store>
+      <database-store>
+        <jdbc-driver-class-name>org.postgresql.Driver</jdbc-driver-class-name>
+        <jdbc-connection-url>jdbc:postgresql://dbms:5432/broker11?user=broker11&amp;password=broker11</jdbc-connection-url>
+        <message-table-name>MESSAGES</message-table-name>
+        <bindings-table-name>BINDINGS</bindings-table-name>
+        <large-message-table-name>LARGE_MESSAGES</large-message-table-name>
+        <page-store-table-name>PAGE_STORE</page-store-table-name>
+        <node-manager-store-table-name>NODE_MANAGER_STORE</node-manager-store-table-name>
+        <jdbc-lock-expiration>20000</jdbc-lock-expiration>
+        <jdbc-lock-renew-period>4000</jdbc-lock-renew-period>
+        <jdbc-network-timeout>20000</jdbc-network-timeout>
+      </database-store>
+    </store>
+
+    <persistence-enabled>true</persistence-enabled>
+
+    <journal-type>ASYNCIO</journal-type>
+    <paging-directory>data/paging</paging-directory>
+    <bindings-directory>data/bindings</bindings-directory>
+    <journal-directory>data/journal</journal-directory>
+    <large-messages-directory>data/large-messages</large-messages-directory>
+
+    <journal-datasync>true</journal-datasync>
+    <journal-min-files>2</journal-min-files>
+    <journal-pool-files>10</journal-pool-files>
+    <journal-device-block-size>4096</journal-device-block-size>
+    <journal-file-size>10M</journal-file-size>
+
+    <connectors>
+      <connector name="broker11">tcp://0.0.0.0:61616</connector>
+      <connector name="broker12m">tcp://broker12m:61616</connector>
+      <connector name="broker12s">tcp://broker12s:61616</connector>
+    </connectors>
+
+    <disk-scan-period>5000</disk-scan-period>
+    <max-disk-usage>90</max-disk-usage>
+
+    <critical-analyzer>true</critical-analyzer>
+    <critical-analyzer-timeout>120000</critical-analyzer-timeout>
+    <critical-analyzer-check-period>60000</critical-analyzer-check-period>
+    <critical-analyzer-policy>HALT</critical-analyzer-policy>
+
+    <global-max-messages>-1</global-max-messages>
+
+    <acceptors>
+      <acceptor name="all">tcp://0.0.0.0:61616?tcpSendBufferSize=1048576;tcpReceiveBufferSize=1048576;amqpMinLargeMessageSize=102400;protocols=CORE,AMQP,STOMP,HORNETQ,MQTT,OPENWIRE;useEpoll=true;amqpCredits=1000;amqpLowCredits=300;amqpDuplicateDetection=true;supportAdvisory=false;suppressInternalManagementObjects=false</acceptor>
+      <acceptor name="amqp">tcp://0.0.0.0:5672?tcpSendBufferSize=1048576;tcpReceiveBufferSize=1048576;protocols=AMQP;useEpoll=true;amqpCredits=1000;amqpLowCredits=300;amqpMinLargeMessageSize=102400;amqpDuplicateDetection=true</acceptor>
+    </acceptors>
+
+    <cluster-user>c1user</cluster-user>
+    <cluster-password>c1password</cluster-password>
+
+    <cluster-connections>
+      <cluster-connection name="cluster1">
+        <connector-ref>broker11</connector-ref>
+        <message-load-balancing>ON_DEMAND</message-load-balancing>
+        <max-hops>0</max-hops>
+        <static-connectors>
+          <connector-ref>broker12m</connector-ref>
+          <connector-ref>broker12s</connector-ref>
+        </static-connectors>
+      </cluster-connection>
+    </cluster-connections>
+
+    <ha-policy>
+      <shared-store>
+        <master>
+          <failover-on-shutdown>true</failover-on-shutdown>
+        </master>
+      </shared-store>
+    </ha-policy>
+
+    <security-settings>
+      <security-setting match="#">
+        <permission type="createNonDurableQueue" roles="amq"/>
+        <permission type="deleteNonDurableQueue" roles="amq"/>
+        <permission type="createDurableQueue" roles="amq"/>
+        <permission type="deleteDurableQueue" roles="amq"/>
+        <permission type="createAddress" roles="amq"/>
+        <permission type="deleteAddress" roles="amq"/>
+        <permission type="consume" roles="amq"/>
+        <permission type="browse" roles="amq"/>
+        <permission type="send" roles="amq"/>
+        <permission type="manage" roles="amq"/>
+      </security-setting>
+    </security-settings>
+
+    <address-settings>
+      <address-setting match="activemq.management#">
+        <dead-letter-address>DLQ</dead-letter-address>
+        <expiry-address>ExpiryQueue</expiry-address>
+        <redelivery-delay>0</redelivery-delay>
+        <max-size-bytes>-1</max-size-bytes>
+        <message-counter-history-day-limit>10</message-counter-history-day-limit>
+        <address-full-policy>PAGE</address-full-policy>
+        <auto-create-queues>true</auto-create-queues>
+        <auto-create-addresses>true</auto-create-addresses>
+      </address-setting>
+      <address-setting match="#">
+        <dead-letter-address>DLQ</dead-letter-address>
+        <expiry-address>ExpiryQueue</expiry-address>
+        <redelivery-delay>0</redelivery-delay>
+        <max-size-bytes>-1</max-size-bytes>
+        <max-size-messages>-1</max-size-messages>
+        <page-size-bytes>10M</page-size-bytes>
+        <max-read-page-messages>-1</max-read-page-messages>
+        <max-read-page-bytes>20M</max-read-page-bytes>
+        <message-counter-history-day-limit>10</message-counter-history-day-limit>
+        <address-full-policy>PAGE</address-full-policy>
+        <auto-create-queues>false</auto-create-queues>
+        <auto-create-addresses>false</auto-create-addresses>
+        <auto-delete-queues>false</auto-delete-queues>
+        <auto-delete-addresses>false</auto-delete-addresses>
+      </address-setting>
+    </address-settings>
+
+    <addresses>
+      <address name="DLQ">
+        <anycast>
+          <queue name="DLQ" />
+        </anycast>
+      </address>
+      <address name="ExpiryQueue">
+        <anycast>
+          <queue name="ExpiryQueue" />
+        </anycast>
+      </address>
+      <address name="myqueue1">
+        <anycast>
+          <queue name="myqueue1" />
+        </anycast>
+      </address>
+      <address name="mytopic1">
+        <multicast>
+          <queue name="mytopic1" />
+        </multicast>
+      </address>
+    </addresses>
+
+  </core>
+
+</configuration>
