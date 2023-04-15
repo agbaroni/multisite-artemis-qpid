@@ -85,6 +85,13 @@
       </shared-store>
     </ha-policy>
 
+    <broker-connections>
+      <amqp-connection uri="tcp://router2a:5672" name="router2a">
+	<mirror />
+	<!-- <peer address-match="my.#" /> -->
+      </amqp-connection>
+    </broker-connections>
+
     <security-settings>
       <security-setting match="#">
         <permission type="createNonDurableQueue" roles="amq"/>

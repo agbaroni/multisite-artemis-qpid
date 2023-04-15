@@ -12,10 +12,11 @@ start_broker() {
 
 start_router() {
     ID=$1
+    PORT=$2
 
     cd router$ID
     buildah build -t router$ID .
-    podman run --rm --name router$ID --network demo -dit router$ID
+    podman run --rm --name router$ID -p $PORT:8161 --network demo -dit router$ID
     cd ..
 }
 
@@ -51,14 +52,14 @@ start() {
     buildah build -t router .
     cd ..
 
-    start_router 1a
-    start_router 2a
+    start_router 1a 8181
+    start_router 2a 8281
 }
 
 stop() {
-    podman rm -f router2A
+    podman rm -f router2a
 
-    podman rm -f router1A
+    podman rm -f router1a
 
     podman rm -f broker22s
     podman rm -f broker22m
@@ -74,9 +75,9 @@ stop() {
 
     podman network rm -f demo
 
-    podman rmi router2A
+    podman rmi router2a
 
-    podman rmi router1A
+    podman rmi router1a
 
     podman rmi broker21m
     podman rmi broker21s

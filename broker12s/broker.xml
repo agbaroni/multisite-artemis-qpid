@@ -85,6 +85,13 @@
       </shared-store>
     </ha-policy>
 
+    <broker-connections>
+      <amqp-connection uri="tcp://router1a:5672" name="router1a">
+	<mirror />
+	<!-- <peer address-match="my.#" /> -->
+      </amqp-connection>
+    </broker-connections>
+
     <security-settings>
       <security-setting match="#">
         <permission type="createNonDurableQueue" roles="amq"/>
@@ -140,14 +147,14 @@
           <queue name="ExpiryQueue" />
         </anycast>
       </address>
-      <address name="myqueue1">
+      <address name="my.queue1">
         <anycast>
-          <queue name="myqueue1" />
+          <queue name="my.queue1" />
         </anycast>
       </address>
-      <address name="mytopic1">
+      <address name="my.topic1">
         <multicast>
-          <queue name="mytopic1" />
+          <queue name="my.topic1" />
         </multicast>
       </address>
     </addresses>
