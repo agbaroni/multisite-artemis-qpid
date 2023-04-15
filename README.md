@@ -1,4 +1,4 @@
-# Multi site Apache Artemis with Apache Qpid
+# WildFly - Enterprise setup
 
 ```
 ./run.sh

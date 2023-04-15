@@ -1,0 +1,5 @@
+FROM broker
+
+ARG INSTANCE
+
+COPY broker_$INSTANCE.xml /opt/instance/etc/broker.xml
