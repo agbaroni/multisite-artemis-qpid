@@ -1,41 +1,37 @@
 #!/bin/bash
 
-podman rm --force broker22s
-podman rm --force broker22m
-podman rm --force broker21s
-podman rm --force broker21m
-podman rm --force broker12s
-podman rm --force broker12m
-podman rm --force broker11s
-podman rm --force broker11m
+master() {
+    echo $(printf "%dm" $1)
+}
 
-podman image rm --force broker22s
-podman image rm --force broker22m
-podman image rm --force broker21s
-podman image rm --force broker21m
-podman image rm --force broker12s
-podman image rm --force broker12m
-podman image rm --force broker11s
-podman image rm --force broker11m
+slave() {
+    echo $(printf "%ds" $1)
+}
 
-podman image rm --force broker
+m_port() {
+    echo $((8161 + ($1 * 10) - 110))
+}
 
-podman image build --tag broker --file Dockerfile.base
+s_port() {
+    mp=$(m_port $1)
+    echo $(($mp + 1))
+}
 
-podman image build --build-arg=INSTANCE=11m --tag broker11m --file Dockerfile.instance
-podman image build --build-arg=INSTANCE=11s --tag broker11s --file Dockerfile.instance
-podman image build --build-arg=INSTANCE=12m --tag broker12m --file Dockerfile.instance
-podman image build --build-arg=INSTANCE=12s --tag broker12s --file Dockerfile.instance
-podman image build --build-arg=INSTANCE=21m --tag broker21m --file Dockerfile.instance
-podman image build --build-arg=INSTANCE=21s --tag broker21s --file Dockerfile.instance
-podman image build --build-arg=INSTANCE=22m --tag broker22m --file Dockerfile.instance
-podman image build --build-arg=INSTANCE=22s --tag broker22s --file Dockerfile.instance
+create_broker_pair() {
+    m=$(master $1)
+    s=$(slave $1)
+    mp=$(m_port $1)
+    sp=$(s_port $1)
+    podman image build --label DEMO=wildfly-enterprise --build-arg=INSTANCE=$m --tag broker$m --file Dockerfile.instance
+    podman image build --label DEMO=wildfly-enterprise --build-arg=INSTANCE=$s --tag broker$s --file Dockerfile.instance
+    podman run --name broker$m --label DEMO=wildfly-enterprise --rm --network demo --detach --interactive --tty --publish $mp:8161 broker$m
+    podman run --name broker$s --label DEMO=wildfly-enterprise --rm --network demo --detach --interactive --tty --publish $sp:8161 broker$s
+}
 
-podman run --name broker11m --rm --network demo --detach --interactive --tty --publish 8161:8161 broker11m
-podman run --name broker11m --rm --network demo --detach --interactive --tty --publish 8161:8161 broker11m
-podman run --name broker11m --rm --network demo --detach --interactive --tty --publish 8161:8161 broker11m
-podman run --name broker11m --rm --network demo --detach --interactive --tty --publish 8161:8161 broker11m
-podman run --name broker11m --rm --network demo --detach --interactive --tty --publish 8161:8161 broker11m
-podman run --name broker11m --rm --network demo --detach --interactive --tty --publish 8161:8161 broker11m
-podman run --name broker11m --rm --network demo --detach --interactive --tty --publish 8161:8161 broker11m
-podman run --name broker11m --rm --network demo --detach --interactive --tty --publish 8161:8161 broker11m
+INSTANCES="11 12 21 22"
+
+podman image build --label DEMO=wildfly-enterprise --tag broker --file Dockerfile.base
+
+for instance in $INSTANCES; do
+    create_broker_pair $instance
+done
