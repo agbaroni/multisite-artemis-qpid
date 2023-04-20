@@ -25,3 +25,9 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
      CREATE DATABASE broker22;
      GRANT ALL PRIVILEGES ON DATABASE broker22 TO broker22;
 EOSQL
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+     CREATE USER infinispan NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD 'infinispan';
+     CREATE DATABASE infinispan;
+     GRANT ALL PRIVILEGES ON DATABASE infinispan TO infinispan;
+EOSQL

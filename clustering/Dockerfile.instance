@@ -1,0 +1,5 @@
+FROM infinispan
+
+ARG INSTANCE
+
+COPY infinispan$INSTANCE.xml /opt/infinispan-server-14.0.2.Final/server/conf/infinispan-custom.xml

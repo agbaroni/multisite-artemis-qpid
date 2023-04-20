@@ -11,3 +11,5 @@ podman network create --label DEMO=wildfly-enterprise demo
 ( cd dbms ; . run.sh )
 
 ( cd messaging ; . run.sh )
+
+( cd clustering ; . run.sh )

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	    xsi:schemaLocation="urn:infinispan:config:14.0 https://infinispan.org/schemas/infinispan-config-14.0.xsd
+				urn:infinispan:server:14.0 https://infinispan.org/schemas/infinispan-server-14.0.xsd"
+	    xmlns="urn:infinispan:config:14.0"
+	    xmlns:server="urn:infinispan:server:14.0">
+
+  <jgroups>
+    <stack name="default" extends="tcp">
+      <TCPPING initial_hosts="infinispan2[7800],infinispan3[7800]" />
+    </stack>
+  </jgroups>
+
+  <cache-container name="default" statistics="true">
+    <transport cluster="mycluster" stack="default" node-name="infinispan1" />
+    <security>
+      <authorization />
+    </security>
+  </cache-container>
+
+  <server xmlns="urn:infinispan:server:14.0">
+
+    <interfaces>
+      <interface name="public">
+	<any-address />
+      </interface>
+    </interfaces>
+
+    <socket-bindings default-interface="public" port-offset="${infinispan.socket.binding.port-offset:0}">
+      <socket-binding name="default" port="${infinispan.bind.port:11222}"/>
+      <socket-binding name="memcached" port="11221"/>
+    </socket-bindings>
+
+    <security>
+      <credential-stores>
+        <credential-store name="credentials" path="credentials.pfx">
+          <clear-text-credential clear-text="secret"/>
+        </credential-store>
+      </credential-stores>
+      <security-realms>
+        <security-realm name="default">
+          <properties-realm groups-attribute="Roles">
+            <user-properties path="users.properties"/>
+            <group-properties path="groups.properties"/>
+          </properties-realm>
+        </security-realm>
+      </security-realms>
+    </security>
+
+    <endpoints socket-binding="default" security-realm="default" />
+
+    <data-sources>
+      <data-source name="ds" jndi-name="jdbc/infinispan" statistics="true">
+        <connection-factory driver="org.postgresql.Driver"
+                            url="jdbc:postgresql://dbms:5432/infinispan"
+                            username="infinispan"
+                            password="infinispan" />
+        <connection-pool initial-size="1"
+                         max-size="10"
+                         min-size="3"
+                         background-validation="1000"
+                         idle-removal="1"
+                         blocking-timeout="1000"
+                         leak-detection="10000" />
+      </data-source>
+    </data-sources>
+
+  </server>
+</infinispan>
