@@ -1,3 +1,4 @@
 FROM rockylinux:8
 
-RUN dnf -y install java-11-openjdk-headless unzip
+RUN dnf -y install java-11-openjdk-headless unzip && \
+    curl -JLOk https://jdbc.postgresql.org/download/postgresql-42.6.0.jar

@@ -49,21 +49,5 @@
 
     <endpoints socket-binding="default" security-realm="default" />
 
-    <data-sources>
-      <data-source name="ds" jndi-name="jdbc/infinispan" statistics="true">
-        <connection-factory driver="org.postgresql.Driver"
-                            url="jdbc:postgresql://dbms:5432/infinispan"
-                            username="infinispan"
-                            password="infinispan" />
-        <connection-pool initial-size="1"
-                         max-size="10"
-                         min-size="3"
-                         background-validation="1000"
-                         idle-removal="1"
-                         blocking-timeout="1000"
-                         leak-detection="10000" />
-      </data-source>
-    </data-sources>
-
   </server>
 </infinispan>

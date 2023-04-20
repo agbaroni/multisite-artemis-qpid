@@ -15,3 +15,5 @@ podman image build --label DEMO=wildfly-enterprise --tag runtime --file Dockerfi
 ( cd messaging ; . run.sh )
 
 ( cd clustering ; . run.sh )
+
+( cd controllers ; . run.sh )

@@ -1,0 +1,8 @@
+FROM runtime
+
+RUN curl -JLOk https://download.jboss.org/wildfly/23.0.2.Final/wildfly-23.0.2.Final.zip && \
+    unzip wildfly-23.0.2.Final.zip -d /opt/ && \
+    mkdir -p /opt/wildfly-23.0.2.Final/modules/org/postgresql/main && \
+    cp postgresql-42.6.0.jar /opt/wildfly-23.0.2.Final/modules/org/postgresql/main/
+
+COPY module.xml /opt/wildfly-23.0.2.Final/modules/org/postgresql/main/
