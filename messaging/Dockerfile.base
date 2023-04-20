@@ -1,7 +1,6 @@
-FROM rockylinux:8
+FROM runtime
 
-RUN dnf -y install java-11-openjdk-headless && \
-    curl -JLOk https://dlcdn.apache.org/activemq/activemq-artemis/2.28.0/apache-artemis-2.28.0-bin.tar.gz && \
+RUN curl -JLOk https://dlcdn.apache.org/activemq/activemq-artemis/2.28.0/apache-artemis-2.28.0-bin.tar.gz && \
     tar -xzf apache-artemis-2.28.0-bin.tar.gz -C /opt/ && \
     /opt/apache-artemis-2.28.0/bin/artemis create --http-host 0.0.0.0 --relax-jolokia --password admin --require-login --user admin --silent /opt/instance && \
     curl -JLOk https://jdbc.postgresql.org/download/postgresql-42.6.0.jar && \
